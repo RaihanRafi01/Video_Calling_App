@@ -134,6 +134,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_datetime_picker_plus:
+    dependency: "direct main"
+    description:
+      name: flutter_datetime_picker_plus
+      sha256: "7d82da02c4e070bb28a9107de119ad195e2319b45c786fecc13482a9ffcc51da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   flutter_hooks:
     dependency: transitive
     description:
@@ -167,10 +175,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_zoom_videosdk
-      sha256: "8ea136aa08f346e93799a838cc7344f842c7e0f690993abe78e78d7530791d9c"
+      sha256: "2ddbd366422de852c2981285e16a38bffa6f67547340a12eb264935a5b05f5f2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.0"
+    version: "1.11.2"
   http:
     dependency: "direct main"
     description:

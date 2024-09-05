@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:test_v1/services/zoom_api.dart';
-import 'package:test_v1/services/zoom_service.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
+import 'services/zoom_api.dart';
+import 'services/zoom_service.dart';
 void main() {
   runApp(MyApp());
 }
@@ -25,12 +26,12 @@ class VideoCallScreen extends StatefulWidget {
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  final ZoomService _zoomService = ZoomService();
-  final ZoomApiService _zoomApiService = ZoomApiService();
+  final ZoomService _zoomService = ZoomService('4EWtf96CozmNxQwZu5LWO3gvojDqCJAq963S', '2GEaEgblthLBOYcKjz6rbXswWsQgYMOyHrYu');
+  final ZoomApiService _zoomApiService = ZoomApiService('Apjd7ZV4Rz-Lkk2y9NdTKg', 'x6M85Mi4Sl8Ae9ZpPlzcvX1TxF4TcOBnnR1d');
   final TextEditingController _sessionNameController = TextEditingController();
   final TextEditingController _sessionPasswordController = TextEditingController();
   final TextEditingController _meetingTopicController = TextEditingController();
-  final TextEditingController _meetingStartTimeController = TextEditingController();
+  DateTime? _meetingStartTime;
   bool _isInitialized = false;
   bool _isLoading = false;
 
@@ -58,7 +59,6 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     }
   }
 
-
   Future<void> _joinMeeting() async {
     if (_isInitialized) {
       setState(() {
@@ -66,8 +66,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       });
       try {
         await _zoomService.joinMeeting(
-          sessionName: _sessionNameController.text.trim(),
-          sessionPassword: _sessionPasswordController.text.trim(),
+          _sessionNameController.text.trim(),
+          _sessionPasswordController.text.trim(),
         );
       } catch (e) {
         print('Error joining meeting: $e');
@@ -88,7 +88,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       });
       try {
         await _zoomService.startMeeting(
-          sessionName: _sessionNameController.text.trim(),
+          _sessionNameController.text.trim(),
         );
       } catch (e) {
         print('Error starting meeting: $e');
@@ -107,27 +107,16 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       _isLoading = true;
     });
     try {
-      await _zoomApiService.createMeeting(
-        _meetingTopicController.text.trim(),
-        _meetingStartTimeController.text.trim(),
-      );
+      if (_meetingStartTime != null) {
+        await _zoomApiService.createMeeting(
+          _meetingTopicController.text.trim(),
+          _meetingStartTime!.toIso8601String(),
+        );
+      } else {
+        print('Please select a meeting start time.');
+      }
     } catch (e) {
       print('Error scheduling meeting: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _fetchMeetings() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      await _zoomApiService.getScheduledMeetings();
-    } catch (e) {
-      print('Error fetching meetings: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -178,10 +167,15 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   labelText: 'Meeting Topic',
                 ),
               ),
-              TextField(
-                controller: _meetingStartTimeController,
-                decoration: InputDecoration(
-                  labelText: 'Start Time (ISO 8601 Format)',
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  DatePicker.showDateTimePicker(context, onConfirm: (date) {
+                    setState(() => _meetingStartTime = date);
+                  });
+                },
+                child: Text(
+                  _meetingStartTime == null ? 'Pick Start Time' : _meetingStartTime.toString(),
                 ),
               ),
               SizedBox(height: 20),
@@ -189,22 +183,18 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                 onPressed: _scheduleMeeting,
                 child: Text('Schedule Meeting'),
               ),
-              ElevatedButton(
-                onPressed: _fetchMeetings,
-                child: Text('Fetch Scheduled Meetings'),
-              ),
             ],
           ),
         ),
       ),
     );
   }
+
   @override
   void dispose() {
     _sessionNameController.dispose();
     _sessionPasswordController.dispose();
     _meetingTopicController.dispose();
-    _meetingStartTimeController.dispose();
     super.dispose();
   }
 }

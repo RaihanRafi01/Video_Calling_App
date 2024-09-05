@@ -3,24 +3,24 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:http/http.dart' as http;
 
 class ZoomApiService {
-  final String apiKey = 'YOUR_API_KEY';  // Replace with your Zoom API Key
-  final String apiSecret = 'YOUR_API_SECRET';  // Replace with your Zoom API Secret
+  final String apiKey;
+  final String apiSecret;
   final String baseUrl = 'https://api.zoom.us/v2';
 
-  // Method to generate JWT Token for Zoom API requests
+  ZoomApiService(this.apiKey, this.apiSecret);
+
+  // Generate JWT Token for Zoom API requests
   String _generateJwtToken() {
     final jwt = JWT(
       {
-        'iss': apiKey,  // Issuer is the API Key
-        'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,  // Token expiration (1 hour)
+        'iss': apiKey,
+        'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600,
       },
     );
-
-    final token = jwt.sign(SecretKey(apiSecret));  // Sign with the API Secret
-    return token;
+    return jwt.sign(SecretKey(apiSecret));
   }
 
-  // Method to create a Zoom meeting via API
+  // Create a Zoom meeting via API
   Future<void> createMeeting(String topic, String startTime) async {
     final url = Uri.parse('$baseUrl/users/me/meetings');
     final token = _generateJwtToken();
@@ -33,9 +33,9 @@ class ZoomApiService {
       },
       body: jsonEncode({
         'topic': topic,
-        'type': 2,  // 2 represents a scheduled meeting
+        'type': 2,
         'start_time': startTime,
-        'duration': 60,  // Meeting duration in minutes
+        'duration': 60,
         'timezone': 'UTC',
         'settings': {
           'host_video': true,
@@ -51,7 +51,7 @@ class ZoomApiService {
     }
   }
 
-  // Method to retrieve scheduled meetings via API
+  // Retrieve scheduled meetings
   Future<void> getScheduledMeetings() async {
     final url = Uri.parse('$baseUrl/users/me/meetings');
     final token = _generateJwtToken();
