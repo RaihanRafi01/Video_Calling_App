@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:flutter/services.dart';
 
 import 'services/zoom_api.dart';
 import 'services/zoom_service.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -26,7 +28,9 @@ class VideoCallScreen extends StatefulWidget {
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  final ZoomService _zoomService = ZoomService('4EWtf96CozmNxQwZu5LWO3gvojDqCJAq963S', '2GEaEgblthLBOYcKjz6rbXswWsQgYMOyHrYu');
+  static const platform = MethodChannel('com.example.video_calling_app/zoom');
+
+  final ZoomService _zoomService = ZoomService();
   final ZoomApiService _zoomApiService = ZoomApiService('Apjd7ZV4Rz-Lkk2y9NdTKg', 'x6M85Mi4Sl8Ae9ZpPlzcvX1TxF4TcOBnnR1d');
   final TextEditingController _sessionNameController = TextEditingController();
   final TextEditingController _sessionPasswordController = TextEditingController();

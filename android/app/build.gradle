@@ -48,6 +48,8 @@ android {
 }
 dependencies {
     implementation ("us.zoom.videosdk:zoomvideosdk-core:1.11.2")
+    implementation ("us.zoom.sdk:zoom-sdk-android:5.13.0")
+    implementation ("com.google.android:flexbox:3.0.0")
 }
 flutter {
     source = "../.."
